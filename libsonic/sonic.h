@@ -55,6 +55,54 @@ similar to high speed factors is used.
 extern "C" {
 #endif
 
+#ifdef SONIC_INTERNAL
+/* The following #define's are used to change the names of the routines defined
+ * here so that a new library (sonic2) can reuse these names, and then call
+ * the original names.  We do this for two reasons: 1) we don't want to change
+ * the original API, and 2) we want to add a shim, using the original names and
+ * still call these routines.
+ *
+ * Original users of this API and the libsonic library need to do nothing.  The
+ * original behavior remains.
+ *
+ * A new user that add some additional functionality above this library (a shim)
+ * should #define SONIC_INTERNAL before including this file, undefine all these
+ * symbols and call the sonicIntXXX functions directly.
+ */
+#define sonicCreateStream sonicIntCreateStream
+#define sonicDestroyStream sonicIntDestroyStream
+#define sonicWriteFloatToStream sonicIntWriteFloatToStream
+#define sonicWriteShortToStream sonicIntWriteShortToStream
+#define sonicWriteUnsignedCharToStream sonicIntWriteUnsignedCharToStream
+#define sonicReadFloatFromStream sonicIntReadFloatFromStream
+#define sonicReadShortFromStream sonicIntReadShortFromStream
+#define sonicReadUnsignedCharFromStream sonicIntReadUnsignedCharFromStream
+#define sonicFlushStream sonicIntFlushStream
+#define sonicSamplesAvailable sonicIntSamplesAvailable
+#define sonicGetSpeed sonicIntGetSpeed
+#define sonicSetSpeed sonicIntSetSpeed
+#define sonicGetPitch sonicIntGetPitch
+#define sonicSetPitch sonicIntSetPitch
+#define sonicGetRate sonicIntGetRate
+#define sonicSetRate sonicIntSetRate
+#define sonicGetVolume sonicIntGetVolume
+#define sonicSetVolume sonicIntSetVolume
+#define sonicGetQuality sonicIntGetQuality
+#define sonicSetQuality sonicIntSetQuality
+#define sonicGetSampleRate sonicIntGetSampleRate
+#define sonicSetSampleRate sonicIntSetSampleRate
+#define sonicGetNumChannels sonicIntGetNumChannels
+#define sonicGetUserData sonicIntGetUserData
+#define sonicSetUserData sonicIntSetUserData
+#define sonicSetNumChannels sonicIntSetNumChannels
+#define sonicChangeFloatSpeed sonicIntChangeFloatSpeed
+#define sonicChangeShortSpeed sonicIntChangeShortSpeed
+#define sonicEnableNonlinearSpeedup sonicIntEnableNonlinearSpeedup
+#define sonicComputeSpectrogram sonicIntComputeSpectrogram
+#define sonicGetSpectrogram sonicIntGetSpectrogram
+
+#endif /* SONIC_INTERNAL */
+
 /* This specifies the range of voice pitches we try to match.
    Note that if we go lower than 65, we could overflow in findPitchInRange */
 #ifndef SONIC_MIN_PITCH
@@ -78,16 +126,20 @@ typedef struct sonicStreamStruct* sonicStream;
 sonicStream sonicCreateStream(int sampleRate, int numChannels);
 /* Destroy the sonic stream. */
 void sonicDestroyStream(sonicStream stream);
+/* Attach user data to the stream. */
+void sonicSetUserData(sonicStream stream, void *userData);
+/* Retrieve user data attached to the stream. */
+void *sonicGetUserData(sonicStream stream);
 /* Use this to write floating point data to be speed up or down into the stream.
    Values must be between -1 and 1.  Return 0 if memory realloc failed,
    otherwise 1 */
-int sonicWriteFloatToStream(sonicStream stream, float* samples, int numSamples);
+int sonicWriteFloatToStream(sonicStream stream, const float* samples, int numSamples);
 /* Use this to write 16-bit data to be speed up or down into the stream.
    Return 0 if memory realloc failed, otherwise 1 */
-int sonicWriteShortToStream(sonicStream stream, short* samples, int numSamples);
+int sonicWriteShortToStream(sonicStream stream, const short* samples, int numSamples);
 /* Use this to write 8-bit unsigned data to be speed up or down into the stream.
    Return 0 if memory realloc failed, otherwise 1 */
-int sonicWriteUnsignedCharToStream(sonicStream stream, unsigned char* samples,
+int sonicWriteUnsignedCharToStream(sonicStream stream, const unsigned char* samples,
                                    int numSamples);
 /* Use this to read floating point data out of the stream.  Sometimes no data
    will be available, and zero is returned, which is not an error condition. */
@@ -123,6 +175,8 @@ void sonicSetRate(sonicStream stream, float rate);
 float sonicGetVolume(sonicStream stream);
 /* Set the scaling factor of the stream. */
 void sonicSetVolume(sonicStream stream, float volume);
+/* Chord pitch is DEPRECATED.  AFAIK, it was never used by anyone.  These
+   functions still exist to avoid breaking existing code. */
 /* Get the chord pitch setting. */
 int sonicGetChordPitch(sonicStream stream);
 /* Set chord pitch mode on or off.  Default is off.  See the documentation
@@ -222,7 +276,7 @@ int sonicWritePGM(sonicBitmap bitmap, char* fileName);
    2*period samples.  Time should advance one pitch period for each call to
    this function. */
 void sonicAddPitchPeriodToSpectrogram(sonicSpectrogram spectrogram,
-                                      short* samples, int period,
+                                      short* samples, int numSamples,
                                       int numChannels);
 #endif  /* SONIC_SPECTROGRAM */
 
