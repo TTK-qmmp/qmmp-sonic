@@ -1,3 +1,6 @@
+#ifndef SONIC_H_
+#define SONIC_H_
+
 /* Sonic library
    Copyright 2010
    Bill Cox
@@ -57,7 +60,7 @@ extern "C" {
 
 #ifdef SONIC_INTERNAL
 /* The following #define's are used to change the names of the routines defined
- * here so that a new library (sonic2) can reuse these names, and then call
+ * here so that a new library (i.e. speedy) can reuse these names, and then call
  * the original names.  We do this for two reasons: 1) we don't want to change
  * the original API, and 2) we want to add a shim, using the original names and
  * still call these routines.
@@ -98,6 +101,7 @@ extern "C" {
 #define sonicChangeFloatSpeed sonicIntChangeFloatSpeed
 #define sonicChangeShortSpeed sonicIntChangeShortSpeed
 #define sonicEnableNonlinearSpeedup sonicIntEnableNonlinearSpeedup
+#define sonicSetDurationFeedbackStrength sonicIntSetDurationFeedbackStrength
 #define sonicComputeSpectrogram sonicIntComputeSpectrogram
 #define sonicGetSpectrogram sonicIntGetSpectrogram
 
@@ -283,3 +287,5 @@ void sonicAddPitchPeriodToSpectrogram(sonicSpectrogram spectrogram,
 #ifdef __cplusplus
 }
 #endif
+
+#endif  /* SONIC_H_ */
