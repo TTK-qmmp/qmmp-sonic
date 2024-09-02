@@ -17,13 +17,21 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 #endif
     m_ui.ratioSlider->setRange(12, 100);  // (0.25, 2)
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    QSettings settings;
+#else
     QSettings settings(Qmmp::configFile(), QSettings::IniFormat);
+#endif
     m_ui.ratioSlider->setValue(settings.value("Sonic/ratio", DEFAULT_RATIO).toInt());
 }
 
 void SettingsDialog::accept()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    QSettings settings;
+#else
     QSettings settings(Qmmp::configFile(), QSettings::IniFormat);
+#endif
     settings.setValue("Sonic/ratio", m_ui.ratioSlider->value());
 
     if(SonicPlugin::instance())
