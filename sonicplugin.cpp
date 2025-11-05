@@ -1,7 +1,7 @@
 #include "sonicplugin.h"
 
+#include <cmath>
 #include <QSettings>
-#include <qmath.h>
 
 SonicPlugin *SonicPlugin::m_instance = nullptr;
 
@@ -24,7 +24,7 @@ void SonicPlugin::applyEffect(Buffer *b)
     if(samples > b->size)
     {
         delete[] b->data;
-        b->size = ceil(samples * 1.0 / b->size) * QMMP_BLOCK_FRAMES * channels();
+        b->size = std::ceil(samples * 1.0 / b->size) * QMMP_BLOCK_FRAMES * channels();
         b->data = new float[b->size];
         b->samples = b->size;
     }
@@ -54,9 +54,9 @@ void SonicPlugin::configure(quint32 srate, ChannelMap map)
     sonicSetQuality(m_stream, 0);
 
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-    QSettings settings;
+    const QSettings settings;
 #else
-    QSettings settings(Qmmp::configFile(), QSettings::IniFormat);
+    const QSettings settings(Qmmp::configFile(), QSettings::IniFormat);
 #endif
     setRatio(settings.value("Sonic/ratio", DEFAULT_RATIO).toInt());
 }
