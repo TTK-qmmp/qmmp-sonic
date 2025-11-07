@@ -22,6 +22,10 @@
 #include <qmmp/qmmp.h>
 #include <qmmp/effectfactory.h>
 
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+#  define Q_PLUGIN_METADATA(x)
+#endif
+
 /*!
  * @author Greedysky <greedysky@163.com>
  */
