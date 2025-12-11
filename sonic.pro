@@ -17,8 +17,6 @@ SOURCES += sonicplugin.cpp \
 
 FORMS += settingsdialog.ui
 
-INCLUDEPATH += $$PWD/libsonic
-
 #CONFIG += BUILD_PLUGIN_INSIDE
 contains(CONFIG, BUILD_PLUGIN_INSIDE){
     include($$PWD/../../plugins.pri)
