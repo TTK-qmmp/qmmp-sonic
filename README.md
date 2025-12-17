@@ -1,5 +1,7 @@
 This is a plugin for Qmmp (1.6.0 or greater) which supports speed pitch effect.
 
+Based on [sonic](https://github.com/waywardgeek/sonic) (Simple algorithm for speeding up or slowing down speech).
+
 The following packages are required, including development headers,
 which some vendors split into separate packages:
 
